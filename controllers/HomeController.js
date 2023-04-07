@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer";
+import GitHubScrapper from "../Utils/GitHubScrapper.js";
 
 class HomeController {
     static async index(req, res) {
@@ -7,52 +7,20 @@ class HomeController {
 
     static async buscar(req, res) {
         let { url } = req.body;
-        const browser = await puppeteer.launch({
-            headless: true
-        })
-        const page = await browser.newPage();
+        let listaRepositorios = null;
 
-        await page.setViewport({
-            width: 800,
-            height: 900,
-            deviceScaleFactor: 1,
-            isMobile: false,
-            hasTouch: false,
-            isLandscape: false
-        });
+        try {
+            listaRepositorios = await GitHubScrapper.buscar(url);
 
-        await page.goto(url);
+            res.status(200).render("index", {repositorios: listaRepositorios});
+        } catch (error) {
+            let mensagem = {
+                texto: "URL inválida.",
+                tipo: "danger"
+            }
 
-        let listaRepositorios = [];
-
-        let titulos = await page.$$('h3 a');
-
-        for (const titulo of titulos) {
-            let title = await titulo.getProperty("textContent")
-            let href = await titulo.getProperty("href")
-            listaRepositorios.push({
-                nome: await title.jsonValue(),
-                link: await href.jsonValue(),
-            });
-        }
-
-        await page.click(".next_page")
-
-        await page.waitForSelector('h3 a');
-
-
-        titulos = await page.$$('h3 a');
-
-        for (const titulo of titulos) {
-            let title = await titulo.getProperty("textContent")
-            let href = await titulo.getProperty("href")
-            listaRepositorios.push({
-                nome: await title.jsonValue(),
-                link: await href.jsonValue(),
-            });
-        }
-
-        res.status(200).render("index", {repositorios: listaRepositorios});
+            res.status(500).render("index", {mensagem});
+        }      
     }
 }
 

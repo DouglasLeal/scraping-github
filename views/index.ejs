@@ -22,6 +22,10 @@
         </form>
 
         <div class="my-5">
+            <% if(typeof mensagem !="undefined" ) { %>
+                <p class="text-center alert alert-<%= mensagem.tipo %>"><%= mensagem.texto %></p>
+            <% } %>
+
             <table class="table table-striped">
                 <tbody>
                     <% if(typeof repositorios !="undefined" ) { %>
