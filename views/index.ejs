@@ -13,7 +13,7 @@
 
 <body>
     <div class="container">
-        <h1 class="text-center my-5">Github</h1>
+        <h1 class="text-center my-5">Github Scrapper</h1>
 
         <form action="./buscar" method="post">
             <input type="text" name="url" class="form-control my-3" placeholder="buscar...">
@@ -26,13 +26,26 @@
                 <p class="text-center alert alert-<%= mensagem.tipo %>"><%= mensagem.texto %></p>
             <% } %>
 
-            <table class="table table-striped">
+            <table class="table table-striped table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Tecnologia</th>
+                        <th>Privacidade</th>
+                    </tr>
+                </thead>
                 <tbody>
                     <% if(typeof repositorios !="undefined" ) { %>
                         <% for (let repositorio of repositorios) { %>
                             <tr>
                                 <td>
                                     <a target="_blank" href="<%= repositorio.link %>"><%= repositorio.nome %></a>
+                                </td>
+                                <td>
+                                    <p class="mb-0"><%= repositorio.tecnologia %></p>
+                                </td>
+                                <td>
+                                    <p class="mb-0"><%= repositorio.privacidade %></p>
                                 </td>
                             </tr>
                         <% } %>

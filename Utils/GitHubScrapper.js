@@ -20,32 +20,23 @@ class GitHubScrapper{
 
         let listaRepositorios = [];
 
-        let titulos = await page.$$('h3 a');
+        let repositorios = await page.$$('li.source');
 
-        for (const titulo of titulos) {
-            let title = await titulo.getProperty("textContent")
-            let href = await titulo.getProperty("href")
-            listaRepositorios.push({
-                nome: await title.jsonValue(),
-                link: await href.jsonValue(),
-            });
+        for(const repo of repositorios){
+            let titulo = await repo.$('h3 a');
+            let spanPublicPrivate = await repo.$('span.Label--secondary');
+            let spanTecnologia = await repo.$("span[itemprop=programmingLanguage]");
+
+            if(titulo && spanPublicPrivate && spanTecnologia){
+                listaRepositorios.push({
+                    nome: await titulo.evaluate(node => node.innerText),
+                    link: await titulo.evaluate(node => node.href),
+                    privacidade: await spanPublicPrivate.evaluate(node => node.innerText),
+                    tecnologia: await spanTecnologia.evaluate(node => node.innerText)
+                });
+            }
         }
 
-        await page.click(".next_page")
-
-        await page.waitForSelector('h3 a');
-
-
-        titulos = await page.$$('h3 a');
-
-        for (const titulo of titulos) {
-            let title = await titulo.getProperty("textContent")
-            let href = await titulo.getProperty("href")
-            listaRepositorios.push({
-                nome: await title.jsonValue(),
-                link: await href.jsonValue(),
-            });
-        }
         await browser.close();
 
         return listaRepositorios;
